@@ -7,10 +7,11 @@ endif
 
 let s:cachepath = fnamemodify(expand('<sfile>'), ':h:h') .. '/.popup_signature'
 
-function! popup_signature#rebuild() abort
+function! popup_signature#rebuild(...) abort
+    let paths = (0 < a:0) ? (a:000) : [expand('$VIMRUNTIME/doc/popup.txt'), expand('$VIMRUNTIME/doc/eval.txt')]
     let obsolete_keys = ['buffer_exists', 'buffer_name', 'buffer_number', 'file_readable', 'highlight_exists']
     let lines = []
-    for path in [expand('$VIMRUNTIME/doc/popup.txt'), expand('$VIMRUNTIME/doc/eval.txt')]
+    for path in paths
         if filereadable(path)
             let lines += readfile(path)
         endif
@@ -53,7 +54,9 @@ function! popup_signature#show_popup() abort
             if -1 != s:popup_id
                 call popup_close(s:popup_id)
             endif
-            let s:popup_id = popup_atcursor(s:dict[key], {})
+            let s:popup_id = popup_atcursor(s:dict[key], {
+                    \   'padding' : [1, 1, 1, 1],
+                    \ })
         endif
     endif
 endfunction
