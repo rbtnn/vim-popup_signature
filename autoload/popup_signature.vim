@@ -37,7 +37,7 @@ function! popup_signature#rebuild(...) abort
 endfunction
 
 function! popup_signature#show_popup() abort
-    if 'vim' == &filetype
+    if 'vim' == &filetype && get(g:, 'popup_signature_enable', 1)
         let s:dict = get(s:, 'dict', {})
         if empty(s:dict)
             if filereadable(s:cachepath)
@@ -53,8 +53,8 @@ function! popup_signature#show_popup() abort
                 call popup_close(s:popup_id)
             endif
             let s:popup_id = popup_atcursor(s:dict[key], {
-                    \   'padding' : [1, 1, 1, 1],
-                    \ })
+                        \   'padding' : [1, 1, 1, 1],
+                        \ })
         endif
     endif
 endfunction
