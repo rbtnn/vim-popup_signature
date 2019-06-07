@@ -22,8 +22,6 @@ function! popup_signature#rebuild(...) abort
         if (funcname =~# '^[a-z_]\+$') && (-1 == index(obsolete_keys, funcname))
             for i in range(0, len(lines) - 1)
                 if lines[i] =~# escape(('*' .. funcname .. '()*'), '*')
-                    let s = i
-                    let e = i
                     for e in range(i, i + 3)
                         if lines[e] =~# ('^' .. funcname .. '(')
                             let s:dict[funcname] = matchstr(lines[e], '^[^)]*)')
