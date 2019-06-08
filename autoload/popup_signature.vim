@@ -84,11 +84,19 @@ function! s:message(text) abort
     echohl None
 endfunction
 
-let s:__version__ = 2
+let s:__version__ = 3
+
 let s:cachepath = fnamemodify(expand('<sfile>'), ':h:h') .. '/.popup_signature'
+
 let s:bg = s:group_name2synIDattr('Pmenu', 'bg#')
 let s:fg_name = s:group_name2synIDattr('Normal', 'fg#')
 let s:fg_args = s:group_name2synIDattr('Special', 'fg#')
-execute printf('highlight PopupSignatureFuncName guifg=%s guibg=%s', s:fg_name, s:bg)
-execute printf('highlight PopupSignatureFuncArgs guifg=%s guibg=%s', s:fg_args, s:bg)
+
+if has('gui')
+    execute printf('highlight PopupSignatureFuncName guifg=%s guibg=%s', s:fg_name, s:bg)
+    execute printf('highlight PopupSignatureFuncArgs guifg=%s guibg=%s', s:fg_args, s:bg)
+else
+    execute printf('highlight PopupSignatureFuncName ctermfg=%s ctermbg=%s', s:fg_name, s:bg)
+    execute printf('highlight PopupSignatureFuncArgs ctermfg=%s ctermbg=%s', s:fg_args, s:bg)
+endif
 
