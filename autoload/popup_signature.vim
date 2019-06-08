@@ -5,9 +5,6 @@ else
     finish
 endif
 
-let s:__version__ = 1
-let s:cachepath = fnamemodify(expand('<sfile>'), ':h:h') .. '/.popup_signature'
-
 function! popup_signature#build(...) abort
     call s:message('Building cache ...')
     let paths = (0 < a:0) ? (a:000) : [expand('$VIMRUNTIME/doc/popup.txt'), expand('$VIMRUNTIME/doc/eval.txt')]
@@ -41,16 +38,6 @@ function! popup_signature#build(...) abort
 endfunction
 
 function! popup_signature#execute_cmds_in_popup(funcname) abort
-    let w:popup_signature = get(w:, 'popup_signature', {})
-    if empty(w:popup_signature)
-        let w:popup_signature = {
-                \   'bg' : s:group_name2synIDattr(empty(&wincolor) ? 'Pmenu' : &wincolor, 'bg#'),
-                \   'fg_name' : s:group_name2synIDattr('Normal', 'fg#'),
-                \   'fg_args' : s:group_name2synIDattr('Special', 'fg#'),
-                \ }
-    endif
-    execute printf('highlight PopupSignatureFuncName guifg=%s guibg=%s', w:popup_signature.fg_name, w:popup_signature.bg)
-    execute printf('highlight PopupSignatureFuncArgs guifg=%s guibg=%s', w:popup_signature.fg_args, w:popup_signature.bg)
     call matchadd('PopupSignatureFuncName', a:funcname)
     let str = s:dict[(a:funcname)]
     let xs = ['dummy', -1, -1]
@@ -96,4 +83,12 @@ function! s:message(text) abort
     echomsg printf('[popup_signature] %s', a:text)
     echohl None
 endfunction
+
+let s:__version__ = 2
+let s:cachepath = fnamemodify(expand('<sfile>'), ':h:h') .. '/.popup_signature'
+let s:bg = s:group_name2synIDattr('Pmenu', 'bg#')
+let s:fg_name = s:group_name2synIDattr('Normal', 'fg#')
+let s:fg_args = s:group_name2synIDattr('Special', 'fg#')
+execute printf('highlight PopupSignatureFuncName guifg=%s guibg=%s', s:fg_name, s:bg)
+execute printf('highlight PopupSignatureFuncArgs guifg=%s guibg=%s', s:fg_args, s:bg)
 
