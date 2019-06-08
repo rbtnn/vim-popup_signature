@@ -1,5 +1,5 @@
 
-if exists(':scriptversion') && exists('*popup_atcursor')
+if has('vimscript-3') && has('textprop') && exists('*popup_atcursor')
     scriptversion 3
 else
     finish
