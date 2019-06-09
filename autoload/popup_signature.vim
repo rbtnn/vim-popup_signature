@@ -5,6 +5,9 @@ else
     finish
 endif
 
+let s:__version__ = 4
+let s:cachepath = fnamemodify(expand('<sfile>'), ':h:h') .. '/.popup_signature'
+
 function! popup_signature#build() abort
     call s:message('Building cache ...')
     let paths = [
@@ -52,18 +55,6 @@ function! popup_signature#build() abort
     call s:message('Has builded cache.')
 endfunction
 
-function! popup_signature#execute_cmds_in_popup(funcname) abort
-    call matchadd('PopupSignatureFuncName', a:funcname, 1)
-    let signature = s:dict[(a:funcname)].signature
-    let xs = ['dummy', -1, -1]
-    while !empty(xs[0])
-        let xs = matchstrpos(signature, '{[^}]*}', xs[2])
-        call matchadd('PopupSignatureFuncArgs', xs[0], 2)
-    endwhile
-    call matchadd('PopupSignatureFuncSummay', '\%2l', 3)
-    nohlsearch
-endfunction
-
 function! popup_signature#show_popup() abort
     if (-1 != index(split(&filetype, '\.'), 'vim')) && get(g:, 'popup_signature_enable', 1)
         let s:dict = get(s:, 'dict', {})
@@ -86,17 +77,9 @@ function! popup_signature#show_popup() abort
             let s:popup_id = popup_atcursor(lines, {
                     \   'padding' : [1, 1, 1, 1],
                     \ })
-            call win_execute(s:popup_id, printf('call popup_signature#execute_cmds_in_popup(%s)', string(funcname)))
+            call win_execute(s:popup_id, 'setfiletype popup_signature')
         endif
     endif
-endfunction
-
-function! s:group_name2synIDattr(group_name, what) abort
-    let syn_id = 1
-    while a:group_name != synIDattr(syn_id, 'name')
-        let syn_id += 1
-    endwhile
-    return synIDattr(syn_id, a:what)
 endfunction
 
 function! s:message(text) abort
@@ -104,23 +87,4 @@ function! s:message(text) abort
     echomsg printf('[popup_signature] %s', a:text)
     echohl None
 endfunction
-
-let s:__version__ = 4
-
-let s:cachepath = fnamemodify(expand('<sfile>'), ':h:h') .. '/.popup_signature'
-
-let s:bg = s:group_name2synIDattr('Pmenu', 'bg#')
-let s:fg_name = s:group_name2synIDattr('Function', 'fg#')
-let s:fg_args = s:group_name2synIDattr('Special', 'fg#')
-let s:fg_summary = s:group_name2synIDattr('Normal', 'fg#')
-
-if has('gui')
-    execute printf('highlight PopupSignatureFuncName   guifg=%s guibg=%s', s:fg_name, s:bg)
-    execute printf('highlight PopupSignatureFuncArgs   guifg=%s guibg=%s', s:fg_args, s:bg)
-    execute printf('highlight PopupSignatureFuncSummay guifg=%s guibg=%s', s:fg_summary, s:bg)
-else
-    execute printf('highlight PopupSignatureFuncName   ctermfg=%s ctermbg=%s', s:fg_name, s:bg)
-    execute printf('highlight PopupSignatureFuncArgs   ctermfg=%s ctermbg=%s', s:fg_args, s:bg)
-    execute printf('highlight PopupSignatureFuncSummay ctermfg=%s ctermbg=%s', s:fg_summary, s:bg)
-endif
 
