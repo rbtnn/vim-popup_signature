@@ -77,7 +77,19 @@ function! popup_signature#show_popup() abort
             let s:popup_id = popup_atcursor(lines, {
                     \   'padding' : [1, 1, 1, 1],
                     \ })
-            call win_execute(s:popup_id, 'setfiletype popup_signature')
+            if has('win32')
+                if has('gui_running')
+                    call win_execute(s:popup_id, 'setfiletype popup_signature')
+                else
+                    if has('vcon') && has('termguicolors')
+                        if &termguicolors
+                            call win_execute(s:popup_id, 'setfiletype popup_signature')
+                        endif
+                    endif
+                endif
+            else
+                call win_execute(s:popup_id, 'setfiletype popup_signature')
+            endif
         endif
     endif
 endfunction
