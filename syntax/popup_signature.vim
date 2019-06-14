@@ -22,6 +22,8 @@ let s:fg_name = s:group_name2synIDattr('Function', 'fg#')
 let s:fg_args = s:group_name2synIDattr('Special', 'fg#')
 let s:fg_summary = s:group_name2synIDattr('Normal', 'fg#')
 
-execute printf('highlight PopupSignatureFuncName   guifg=%s guibg=%s', s:fg_name, s:bg)
-execute printf('highlight PopupSignatureFuncArgs   guifg=%s guibg=%s', s:fg_args, s:bg)
-execute printf('highlight PopupSignatureFuncSummay guifg=%s guibg=%s', s:fg_summary, s:bg)
+let s:mode = (s:bg =~# '^#') ? 'gui' : 'cterm'
+
+execute printf('highlight PopupSignatureFuncName   %sfg=%s %sbg=%s', s:mode, s:fg_name, s:mode, s:bg)
+execute printf('highlight PopupSignatureFuncArgs   %sfg=%s %sbg=%s', s:mode, s:fg_args, s:mode, s:bg)
+execute printf('highlight PopupSignatureFuncSummay %sfg=%s %sbg=%s', s:mode, s:fg_summary, s:mode, s:bg)

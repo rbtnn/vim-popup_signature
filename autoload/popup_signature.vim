@@ -88,7 +88,9 @@ function! popup_signature#show_popup() abort
                     endif
                 endif
             else
-                call win_execute(s:popup_id, 'setfiletype popup_signature')
+                if 256 <= &t_Co
+                    call win_execute(s:popup_id, 'setfiletype popup_signature')
+                endif
             endif
         endif
     endif
