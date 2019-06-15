@@ -5,11 +5,12 @@ else
     finish
 endif
 
-let s:__version__ = 4
+let s:__version__ = 5
 let s:cachepath = fnamemodify(expand('<sfile>'), ':h:h') .. '/.popup_signature'
 
 function! popup_signature#build() abort
     call s:message('Building cache ...')
+    let s:dict = {}
     let paths = [
             \ expand('$VIMRUNTIME/doc/usr_41.txt'),
             \ expand('$VIMRUNTIME/doc/popup.txt'),
@@ -23,25 +24,26 @@ function! popup_signature#build() abort
         endif
     endfor
     call filter(lines, { i,x ->
-            \ (x =~# '^\s\+[a-zA-Z0-9_]\+()') ||
+            \ (x =~# '^\s\+|\?[a-zA-Z0-9_]\+()|\?') ||
             \ (x =~# '^[a-zA-Z0-9_]\+(') ||
             \ (x =~# '\*$')
             \ })
     for x in getcompletion('*', 'function')
         let funcname = matchstr(x, '^.*\ze(')
         if (funcname =~# '^[a-zA-Z0-9_]\+$') && (-1 == index(obsoletes, funcname))
-            let summary = ''
             for y in range(0, len(lines) - 1)
-                if lines[y] =~# ('^\s\+' .. funcname .. '()')
-                    let summary = matchstr(lines[y], ')\s\+\zs.*$')
+                if lines[y] =~# ('^\s\+|\?' .. funcname .. '()|\?')
+                    let s:dict[funcname] = get(s:dict, funcname, {})
+                    let s:dict[funcname].summary = matchstr(lines[y], ')|\?\s\+\zs.*$')
+                    break
                 endif
+            endfor
+            for y in range(0, len(lines) - 1)
                 if lines[y] =~# escape(('*' .. funcname .. '()*'), '*')
                     for z in range(y, y + 3)
                         if lines[z] =~# ('^' .. funcname .. '(')
-                            let s:dict[funcname] = {
-                                    \   'signature' : matchstr(lines[z], '^[^)]*)'),
-                                    \   'summary' : summary,
-                                    \ }
+                            let s:dict[funcname] = get(s:dict, funcname, {})
+                            let s:dict[funcname].signature = matchstr(lines[z], '^[^)]*)')
                             break
                         endif
                     endfor
@@ -71,7 +73,7 @@ function! popup_signature#show_popup() abort
                 call popup_close(s:popup_id)
             endif
             let lines = [(s:dict[funcname].signature)]
-            if !empty(s:dict[funcname].summary)
+            if !empty(get(s:dict[funcname], 'summary', ''))
                 let lines += [printf('  %-' .. len(lines[0]) .. 's', s:dict[funcname].summary)]
             endif
             let s:popup_id = popup_atcursor(lines, {
