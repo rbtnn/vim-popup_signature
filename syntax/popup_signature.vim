@@ -1,8 +1,8 @@
 
 if has('vimscript-3') && has('textprop') && exists('*popup_atcursor')
-    scriptversion 3
+	scriptversion 3
 else
-    finish
+	finish
 endif
 
 syntax match  PopupSignatureFuncName      /^[a-zA-Z0-9_]\+/
@@ -10,11 +10,11 @@ syntax region PopupSignatureFuncArgs      start='{'  end='}'
 syntax match  PopupSignatureFuncSummay    /\%2l/ 
 
 function! s:group_name2synIDattr(group_name, what) abort
-    let syn_id = 1
-    while a:group_name != synIDattr(syn_id, 'name')
-        let syn_id += 1
-    endwhile
-    return synIDattr(synIDtrans(syn_id), a:what)
+	let syn_id = 1
+	while a:group_name != synIDattr(syn_id, 'name')
+		let syn_id += 1
+	endwhile
+	return synIDattr(synIDtrans(syn_id), a:what)
 endfunction
 
 let s:bg = s:group_name2synIDattr('Pmenu', 'bg#')
